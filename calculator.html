@@ -1,0 +1,221 @@
+<!--Mark Collins-->
+<!--Basic Calculator-->
+<!--02/27/24-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Calculator</title>
+</head>
+<body>
+    <!--Container with all calculator functions and output-->
+    <div id="calcContainer">
+        <div id="calcOutputContainer">
+        <h1 id="calcOutput"></h1>
+        </div>
+        <div id="calcButtons">
+            <button  class="button" id="modifyButton" onclick="clearCalc()">
+                AC
+            </button>
+            <button class="button" id="modifyButton" onclick="negativeButton('-')">
+                +/-
+            </button>
+            <button class="button" id="modifyButton" onclick="percentButton()">
+                %
+            </button>
+            <button  class="button" id="operatorButton" onclick="operatorClick('/')">
+                /
+            </button>
+            <button class="button" onclick="pushNumbers(7)">
+                7
+            </button>
+            <button class="button" onclick="pushNumbers(8)">
+                8
+            </button>
+            <button class="button" onclick="pushNumbers(9)">
+                9
+            </button>
+            <button class="button" id="operatorButton" onclick="operatorClick('x')">
+                X
+            </button>
+            <button class="button" onclick="pushNumbers(4)">
+                4
+            </button>
+            <button class="button" onclick="pushNumbers(5)">
+                5
+            </button>
+            <button class="button" onclick="pushNumbers(6)">
+                6
+            </button>
+            <button class="button" id="operatorButton" onclick="operatorClick('-')">
+                -
+            </button>
+            <button class="button" onclick="pushNumbers(1)">
+                1
+            </button>
+            <button class="button" onclick="pushNumbers(2)">
+                2
+            </button>
+            <button class="button" onclick="pushNumbers(3)">
+                3
+            </button>
+            <button class="button" id="operatorButton" onclick="operatorClick('+')">
+                +
+            </button>
+            <button class="button" onclick="pushNumbers(0)" id="buttonZero">
+                0
+            </button>
+            <button class="button" onclick="pushNumbers('.')" id="buttonDecimal">
+                .
+            </button>
+            <button class="button" onclick="operate()" id="buttonEqual">
+                =
+            </button>
+        </div>
+    </div>
+    <script>
+        let operand = [];
+        let operator = [];
+        let preString = "";
+        let num;
+        let solution;
+        let negativeCounter = 0;
+
+        let calcOutput = document.getElementById('calcOutput')
+        //pushes numbers into prestring when number button is clicked
+        function pushNumbers(x){
+            //checks to see if 11 digits are already entered on calculator
+            if(preString.length >= 11){
+                alert("Max number of digits entered");
+                return;
+            }
+
+            //if negative prepend '-' to prestring
+            let postString = x;
+            preString = preString + postString;
+            //outputs string of numbers onto calc
+            document.getElementById('calcOutput').innerHTML = preString;
+        }
+        
+        //changes prestring to int and pushes it to operand array
+        function pushOperand(){
+            num = parseFloat(preString);
+            operand.push(num);
+        }
+
+        //used to track if operator was already clicked 
+        let operatorClicked = false;
+        //operates depending on what operator is clicked
+        function operatorClick(x){
+            //if operator was already clicked break
+            if(operatorClicked == true){
+                alert("Operation already selected, clear or finish operation");
+                return;
+            }
+            //set operator click to true
+            operatorClicked = true;
+            //convert prestring into a num and push it into operand
+            pushOperand();
+            //clear prestring and calcOutput
+            preString = "";
+            document.getElementById('calcOutput').innerHTML = "";
+           //push operator type into array to use during calculation
+           operator.push(x);
+        }
+
+        //operates and displays solution
+        function operate(){
+            //set operator click back to false
+            operatorClicked = false;
+            //convert prestring into a num and push it into operand
+            pushOperand();
+            //clear prestring and calcOutput
+            preString = "";
+            document.getElementById('calcOutput').innerHTML = "";
+
+            //debugging 
+            console.log('Operand: ' + operand );
+            console.log('Operater: ' + operator );
+            console.log('soluction: ' + solution );
+
+            solution = operand[0];
+            for(let i = 0; i < operator.length; ++i){
+                console.log('OP: ' + operator[i])
+                switch(operator[i]){
+                    case '+':
+                        solution += operand[i + 1];
+                        break;
+                    case '-':
+                        solution -= operand[i + 1];
+                        break;
+                    case 'x': 
+                        solution *= operand[i + 1];
+                        break;
+                    case '/':
+                        if(operand[i + 1] == 0){
+                            alert('Can not divide by 0')
+                            break;
+                        }
+                        else{
+                            solution /= operand[i + 1];
+                        }
+                }
+            }
+
+            // Check if the solution exceeds 10 digits and convert to scientific notation.
+            if (solution.toString().length > 10) {
+                solution = solution.toExponential(5); 
+            }
+
+            //clears calculator variables
+            clearCalc();
+            //push solution into preString for further calculations
+            preString = solution;
+            //output solution
+            document.getElementById('calcOutput').innerHTML = solution;
+        }
+
+        //function to clear calculator and reset all values
+        function clearCalc(){
+            //set operator clicked to false
+            operatorClicked = false;
+            operand = [];
+            operator = [];
+            preString = "";
+            negativeCounter = 0;
+            document.getElementById('calcOutput').innerHTML = "";
+        }
+
+        //function for % button
+        function percentButton (){
+            //check to make sure number is not equal to 0
+            if(preString.length == 0){
+                return;
+            }
+
+            //multiply 0.01 to move decimal two places left
+            preStringNum = parseFloat(preString);
+            preStringNum = preStringNum * 0.01;
+            preString = preStringNum;
+            document.getElementById('calcOutput').innerHTML = preString;
+        }
+
+        //function for +- button
+        function negativeButton(x){
+            if(negativeCounter % 2 == 0){
+                preString = x + preString;
+            }
+            else{
+                preString = preString.substring(1);
+            }
+            
+           //update calculator display
+            calcOutput.innerHTML = preString;
+        
+            //if input is - then increment counter
+            ++negativeCounter;
+            
+        }
+    </script>
+</body>
+</html>
